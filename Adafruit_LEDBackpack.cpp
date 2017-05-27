@@ -421,6 +421,46 @@ void Adafruit_8x8matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
   }
 }
 
+/******************************* 8x8 D1 MINI MATRIX OBJECT */
+
+D1Mini_8x8matrix::D1Mini_8x8matrix(void) : Adafruit_GFX(8, 8) {
+}
+
+void D1Mini_8x8matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
+  if ((y < 0) || (y >= 8)) return;
+  if ((x < 0) || (x >= 8)) return;
+
+  // this matrix is mirrored in x
+  x = 8 - x - 1;
+
+  // check rotation, move pixel around if necessary
+  switch (getRotation()) {
+  case 1:
+    _swap_int16_t(x, y);
+    x = 8 - x - 1;
+    break;
+  case 2:
+    x = 8 - x - 1;
+    y = 8 - y - 1;
+    break;
+  case 3:
+    _swap_int16_t(x, y);
+    y = 8 - y - 1;
+    break;
+  }
+
+  // wrap around the x
+  x += 7;
+  x %= 8;
+
+
+  if (color) {
+    displaybuffer[y] |= 1 << x;
+  } else {
+    displaybuffer[y] &= ~(1 << x);
+  }
+}
+
 /******************************* 8x8 BICOLOR MATRIX OBJECT */
 
 Adafruit_BicolorMatrix::Adafruit_BicolorMatrix(void) : Adafruit_GFX(8, 8) {
